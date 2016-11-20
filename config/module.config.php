@@ -4,6 +4,8 @@ namespace Phpfox\Config;
 
 return [
     'services' => [
-        'configs' => [null, ConfigManager::class],
+        'map' => [
+            'configs' => [null, ConfigManager::class],
+        ],
     ],
 ];
