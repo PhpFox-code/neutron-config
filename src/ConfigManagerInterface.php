@@ -18,13 +18,6 @@ interface ConfigManagerInterface
     public function extend($data);
 
     /**
-     * if string is contain "dot", it search to child item.
-     * maximum support is 2 level.
-     *
-     * $config->get('db.drivers')
-     *
-     * Get $data['db']['drivers']
-     *
      * @param string $key
      *
      * @return mixed

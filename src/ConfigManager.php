@@ -27,16 +27,21 @@ class ConfigManager implements ConfigManagerInterface
 
     public function initialize()
     {
-        $this->extend(include PHPFOX_DIR . '/config/library.config.php');
+        $this->extend(include PHPFOX_DIR . '/config/bootstrap.config.php');
         $this->extend(include PHPFOX_DIR . '/config/db.config.php');
     }
 
     public function extend($data)
     {
-        $this->data = array_merge_recursive($this->data, $data);
+        $this->data = _array_merge_recursive_new($this->data, $data);
         return $this;
     }
 
+    /**
+     * Fix to load modular configuration
+     *
+     * @return $this
+     */
     public function loadModularConfig()
     {
         $result = service('db')->sqlSelect()->from(':core_package')->select('*')
@@ -48,7 +53,7 @@ class ConfigManager implements ConfigManagerInterface
         foreach ($result as $row) {
             $configFilename = PHPFOX_DIR . '/' . $row->path
                 . '/config/module.config.php';
-            $data = array_merge_recursive($data, include $configFilename);
+            $data = _array_merge_recursive_new($data, include $configFilename);
         }
 
         $autoloader = service('autoloader');
@@ -60,6 +65,22 @@ class ConfigManager implements ConfigManagerInterface
 
         $this->extend($data);
 
+        // fix events continuous
+        $temp = $this->data['events'];
+        $events = [];
+
+        foreach ($temp as $k => $items) {
+            foreach ($items as $item) {
+                if (!isset($events[$item])) {
+                    $events[$item] = [];
+                }
+                $events[$item][] = $k;
+            }
+        }
+        $this->data['events'] = $events;
+
+        file_put_contents(PHPFOX_DIR . '/config/all.config.php',
+            '<?php ' . var_export($this->data, true) . ';');
         events()->trigger('onApplicationConfigChanged', $this);
 
         return $this;
@@ -67,18 +88,6 @@ class ConfigManager implements ConfigManagerInterface
 
     public function get($key)
     {
-        if (strpos($key, '.')) {
-            list($p0, $p1) = explode('.', $key, 2);
-            if (!isset($this->data[$p0])) {
-                return null;
-            }
-            if (!isset($this->data[$p0][$p1])) {
-                return null;
-            }
-
-            return $this->data[$p0][$p1];
-        }
-
         if (!isset($this->data[$key])) {
             return null;
         }
