@@ -27,12 +27,41 @@ class ConfigManager implements ConfigManagerInterface
 
     public function initialize()
     {
-
+        $this->extend(include PHPFOX_DIR . '/config/library.config.php');
+        $this->extend(include PHPFOX_DIR . '/config/db.config.php');
     }
 
     public function extend($data)
     {
         $this->data = array_merge_recursive($this->data, $data);
+        return $this;
+    }
+
+    public function loadModularConfig()
+    {
+        $result = service('db')->sqlSelect()->from(':core_package')->select('*')
+            ->where('is_active=?', 1)->order('is_core', 1)->order('priority', 1)
+            ->execute();
+
+        $result = $result->fetch();
+        $data = [];
+        foreach ($result as $row) {
+            $configFilename = PHPFOX_DIR . '/' . $row->path
+                . '/config/module.config.php';
+            $data = array_merge_recursive($data, include $configFilename);
+        }
+
+        $autoloader = service('autoloader');
+        foreach ($data['psr4'] as $k => $vs) {
+            foreach ($vs as $v) {
+                $autoloader->addPsr4($k, PHPFOX_DIR . DS . $v);
+            }
+        }
+
+        $this->extend($data);
+
+        events()->trigger('onApplicationConfigChanged', $this);
+
         return $this;
     }
 
@@ -51,8 +80,9 @@ class ConfigManager implements ConfigManagerInterface
         }
 
         if (!isset($this->data[$key])) {
-            return $this->data[$key];
+            return null;
         }
+        return $this->data[$key];
     }
 
 
