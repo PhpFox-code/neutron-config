@@ -86,11 +86,20 @@ class ConfigManager implements ConfigManagerInterface
         return $this;
     }
 
-    public function get($key)
+    public function get($key, $item = null)
     {
         if (!isset($this->data[$key])) {
             return null;
         }
+
+        if (null !== $item and !isset($this->data[$key][$item])) {
+            return null;
+        }
+
+        if (null !== $item) {
+            return $this->data[$key][$item];
+        }
+
         return $this->data[$key];
     }
 

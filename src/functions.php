@@ -14,11 +14,12 @@ namespace {
 
     /**
      * @param string $key
+     * @param string $item
      *
      * @return mixed|null
      */
-    function config($key)
+    function config($key, $item = null)
     {
-        return ConfigManager::instance()->get($key);
+        return ConfigManager::instance()->get($key, $item);
     }
 }

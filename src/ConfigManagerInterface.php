@@ -19,10 +19,11 @@ interface ConfigManagerInterface
 
     /**
      * @param string $key
+     * @param null   $item
      *
      * @return mixed
      */
-    public function get($key);
+    public function get($key, $item = null);
 
     /**
      * @param string $key
