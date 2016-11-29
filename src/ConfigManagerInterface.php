@@ -1,10 +1,10 @@
 <?php
-namespace Phpfox\Config;
+namespace Neutron\Config;
 
 /**
  * Interface ConfigInterface
  *
- * @package Phpfox\Config
+ * @package Neutron\Config
  */
 interface ConfigManagerInterface
 {

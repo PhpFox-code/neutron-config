@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpfox\Config;
+namespace Neutron\Config;
 
 return [
     'services' => [

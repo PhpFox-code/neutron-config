@@ -1,11 +1,11 @@
 <?php
 
-namespace Phpfox\Config;
+namespace Neutron\Config;
 
 /**
  * Class StandConfig
  *
- * @package Phpfox\Config
+ * @package Neutron\Config
  */
 class ConfigManager implements ConfigManagerInterface
 {
