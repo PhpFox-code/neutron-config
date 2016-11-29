@@ -1,5 +1,5 @@
 {
-  "name": "codelego/phpfox-config",
+  "name": "codelego/neutron-config",
   "description": "Global config library for phpfox framework.",
   "type": "library",
   "license": "MIT",
